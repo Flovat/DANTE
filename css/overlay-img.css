@@ -1,7 +1,18 @@
 #overlay {
     position: absolute;
-    top: 100px;
     z-index: 2147483647;
+    /*background-color:red;*/
+}
+#emoji {
+    height: auto;
+    width: auto;
+    max-width: 100%;
+    min-width:30px;
+}
+/*Grandezza box player.*/
+#playercontent{
+    height:auto;
+    width:auto;
 }
 #annoVideo {
     z-index: 1;

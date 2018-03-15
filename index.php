@@ -164,7 +164,7 @@
                             <strong>Error</strong> An error has occured while saving the annotations. Please contact the mantainer.
                         </div>
         
-                        <div class="player-content">
+                        <div class="player-content" id="playercontent">
 							<!--Sezione che carica il titolo del video e il video stesso-->
 							
 							<?php include './videoPlayer.php'; ?>
@@ -180,7 +180,9 @@
 								//document.write(ar);
 							</script>
 							<!-- container per gli overlay delle sprite -->
-							<div id="overlay"></div>
+							<div id="overlay">
+								<img id="emoji"></img>
+							</div>
 							
 						</div>
                         <!--Includo la slidebar e il suo funzioanmento, registrando automaticamente i valori dentro valSlidebar-->
