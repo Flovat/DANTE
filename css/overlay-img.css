@@ -1,0 +1,8 @@
+#overlay {
+    position: absolute;
+    top: 100px;
+    z-index: 2147483647;
+}
+#annoVideo {
+    z-index: 1;
+}   

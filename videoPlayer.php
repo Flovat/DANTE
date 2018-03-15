@@ -6,9 +6,11 @@
 </div>
 <div class="btn embed-responsive embed-responsive-16by9">
 
-	<video id="annoVideo">
+	<video id="annoVideo" controls>
 	    <source src="video/<?php echo $nameGroup."/".$_GET['vid'];?>" type="video/mp4">
 	</video>
 
 </div>
+
+
 

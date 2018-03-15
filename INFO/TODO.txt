@@ -1,10 +1,4 @@
-- Sistemare emoji arousal
-	eliminare la goccia 
-	aggiungere la face con gli occhi sbarrati e senza bocca, numero 2
-
 - Trovare dei simboli per rappresentare gli estremi della slide bar
-
-- Trovare un video del confessionale a buona risoluzione
 
 - Javascript over png on player
 

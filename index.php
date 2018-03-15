@@ -30,6 +30,7 @@
     <!-- Custom CSS -->
     <link href="css/simple-sidebar.css" rel="stylesheet">
     <link href="css/main.css" rel="stylesheet">
+	<link href="css/overlay-img.css" rel="stylesheet">
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -163,11 +164,28 @@
                             <strong>Error</strong> An error has occured while saving the annotations. Please contact the mantainer.
                         </div>
         
-                        <!--Sezione che carica il titolo del video e il video stesso-->
-                        <?php include './videoPlayer.php'; ?>
+                        <div class="player-content">
+							<!--Sezione che carica il titolo del video e il video stesso-->
+							
+							<?php include './videoPlayer.php'; ?>
+							<!-- Caricamento del video player -->
+							
+							<!--Caricamento del file csv per determinare la bounding box della faccia, dove applicare la Emoji.-->
+							<?php include './csvReader.php'; ?>
 
+							<!--Prendo il json creato salvandolo -->
+							<script type="text/javascript">
+								var $_GET = <?php echo json_encode($_GET); ?>;
+								var jsonArray = <?php echo json_encode($jsonArray) ?>;
+								//document.write(ar);
+							</script>
+							<!-- container per gli overlay delle sprite -->
+							<div id="overlay"></div>
+							
+						</div>
                         <!--Includo la slidebar e il suo funzioanmento, registrando automaticamente i valori dentro valSlidebar-->
                         <?php include './slidebar.php'; ?>
+
                     </div>
 
 
@@ -189,6 +207,14 @@
 
     <script type="text/javascript" src="js/js.cookie.js"></script>
 
+	<!-- VideoFrame JavaScript -->
+	<script type="text/javascript" src="js/VideoFrame.js"></script>
+
+	<!-- OverlaySprite JavaScript -->
+	<script type="text/javascript" src="js/overlay-sprite-videoplayer.js"></script>
+	<!--Csv-Reader -->
+	<script type="text/javascript" src="js/read-csv.js"></script>
+
     <!-- Menu Toggle Script -->
     <script>
 
@@ -201,7 +227,10 @@
         }
         $('#slider').slider('relayout');
 
-        $('#helpModal').on('hidden.bs.modal', function (e) {
+		/*Quando la pagina è pronta carico le Emoji corrispondenti attraverso il metodo loadEmoji di overlay-sprite-videoplayer.js.*/
+		loadEmoji($_GET['type']);
+        
+		$('#helpModal').on('hidden.bs.modal', function (e) {
             if ($("input[name=dismiss]", this).is(":checked")) {
                 Cookies.set('modal_shown', 'yes', { expires: 7, path: '/' });
             }
@@ -238,6 +267,8 @@
             val = -1;
           }
           $("#slider").slider('setValue', val, true)
+		  //Aggiorno l'Emoji in base al valore assegnato dall'utente.
+		  updateEmoji(val,jsonArray);
           //("#annoSlider").slider('refresh');          
         }
     });
@@ -245,11 +276,16 @@
     // start play when video is clicked
     $('#annoVideo').click(function() {
         if (this.paused) {
+			//Metodo implementato nella classe overlay-sprite.js
+			showOverlay();
             this.play();
-
+			moveEmoji(jsonArray);
             var anno_time = (1 / <?php echo $GLOBALS['anno_rate'] ?>) * 1000;
             timer = setInterval(readVid, anno_time);
-        }
+        }else{
+			this.pause();
+			hiddenOverlay();
+		}
     });
 
     // update slider UI when show/hide sidebar    
