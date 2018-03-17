@@ -11,9 +11,9 @@
         <div class="sam">
                 <?php 
                 if($_GET['type'] == "arousal"){
-                    echo '<img class="samimg" src="img/samarousal.png"/>';
+                    echo '<img class="samimg" id="imagesaming" src="img/simplesam_arousal.png"/>';
                 }else if($_GET['type'] == "valence"){
-                    echo '<img class="samimg" src="img/samvalence.png"/>';
+                    echo '<img class="samimg" id="imagesaming" src="img/simplesam_valence.png"/>';
                 }
                 ?>
         </div>

@@ -28,7 +28,9 @@ video{
 .slider:hover {
     opacity: 1;
 }
-
+.slider slider-handle{
+    color:red;
+}
 
 #annoSlider{
     width: 100%;
@@ -58,5 +60,28 @@ video{
     height: 100%;
     background-color: #ccc;
 }
+
+#type-annotation{
+    position:relative;
+    padding-top:20px;
+}
+#type-annotation p {}
+      
+#type-annotation p a {
+    font-size: 20px;
+    border: 1px;
+    width:auto;
+    border-style: ridge;
+    border-radius:5px;
+}
+#type-annotation p a:link, a:visited {
+    color: black;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
+
+
 
 

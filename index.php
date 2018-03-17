@@ -142,6 +142,16 @@
                         <a href="#menu-toggle" class="btn btn-default" id="menu-toggle">
                             <span id="menu-toggle-span" class="glyphicon glyphicon-menu-left" aria-hidden="true"></span> Videos
                         </a>
+						<!-- Bottoni per la scelta del tipo di annotazione. -->
+						<div id="type-annotation">
+								<p>
+									<a id="buttonsimplesam" href="#"  onclick= "simpleSam($_GET['type'])">SIMPLE SAM</a>
+									</p>
+									<p>
+									<a  id="buttonemojisam" href="#"  onclick= "emojiSam($_GET['type'])">EMOJI SAM</a>
+								</p>
+						</div>
+
                     </div>
 
                     <div class="col-lg-10 videoFrame" style="display: <?php if(isset($_GET['vid'])) echo 'block'; else echo 'none' ?>">
@@ -163,12 +173,13 @@
                             </button>                        
                             <strong>Error</strong> An error has occured while saving the annotations. Please contact the mantainer.
                         </div>
-        
                         <div class="player-content" id="playercontent">
 							<!--Sezione che carica il titolo del video e il video stesso-->
 							
-							<?php include './videoPlayer.php'; ?>
 							<!-- Caricamento del video player -->
+							<?php include './videoPlayer.php'; ?>
+
+							
 							
 							<!--Caricamento del file csv per determinare la bounding box della faccia, dove applicare la Emoji.-->
 							<?php include './csvReader.php'; ?>
@@ -187,9 +198,7 @@
 						</div>
                         <!--Includo la slidebar e il suo funzioanmento, registrando automaticamente i valori dentro valSlidebar-->
                         <?php include './slidebar.php'; ?>
-
                     </div>
-
 
                 </div>             
             </div>
@@ -255,7 +264,15 @@
     });
 
     $('#annoSlider').click(function(e) {
-        $('#annoSlider').toggleClass('with-focus');
+	 $('#annoSlider').toggleClass('with-focus');
+	 var clicks = $(this).data('clicks');
+	  if (clicks) {
+	  		showRec('hidden');
+	  } else {
+	  		showRec('visible');
+	  }
+     $(this).data("clicks", !clicks);
+
     });
 
 
@@ -282,7 +299,7 @@
 			showOverlay();
             this.play();
 			moveEmoji(jsonArray);
-            var anno_time = (1 / <?php echo $GLOBALS['anno_rate'] ?>) * 1000;
+			var anno_time = (1 / <?php echo $GLOBALS['anno_rate'] ?>) * 1000;
             timer = setInterval(readVid, anno_time);
         }else{
 			this.pause();

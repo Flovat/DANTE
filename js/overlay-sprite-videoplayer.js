@@ -3,10 +3,20 @@
  * Overlay the image on the player.
  */
 var arrayEmoji = new Array(17);
+var arraySam = new Array(5);
 var img = document.getElementById("emoji");
 var overlay = document.getElementById("overlay");
+var rec = document.getElementById("rec");
 var videoID = document.getElementById("annoVideo");  
 var player = document.getElementById("playercontent");
+
+var buttonSimpleSam = document.getElementById("buttonsimplesam");
+var buttonEmojiSam = document.getElementById("buttonemojisam");
+
+buttonSimpleSam.style.backgroundColor  = "#ccc";
+rec.style.visibility = hidden;
+
+
 
 //Creo gli array con tutte le Emoji (Arousal,Valence)
 function loadEmoji(type) {
@@ -82,3 +92,26 @@ function getFrameInJson(obj,frame) {
         function (obj) { return obj.frame == frame }
     );
 }
+
+function showRec(isVisible) {
+    rec.src = "../img/rec.png";
+    rec.style.height = "25px";
+    rec.style.float = "right";
+    //img.style.height = "125px";
+    rec.style.visibility = isVisible;
+}
+
+function simpleSam(type) {
+    var imagesaming = document.getElementById("imagesaming");
+    imagesaming.src = "../img/simplesam_" + type + ".png";
+    buttonSimpleSam.style.backgroundColor = "#ccc";
+    buttonEmojiSam.style.backgroundColor = "white";
+}
+function emojiSam(type) {
+    var imagesaming = document.getElementById("imagesaming");
+    imagesaming.src = "../img/sam" + type + ".png";
+    buttonSimpleSam.style.backgroundColor = "white";
+    buttonEmojiSam.style.backgroundColor = "#ccc";
+}
+
+
