@@ -4,37 +4,49 @@
  */
 var arrayEmoji = new Array(17);
 var arraySam = new Array(5);
-var img = document.getElementById("emoji");
+//Controllo se sovrapporre Emoji o SimpleSAM
+var typeOverlay = "SAM";
+var currentSliderValue = 0.0;
+var img = document.getElementById("overlay-img");
 var overlay = document.getElementById("overlay");
+overlay.style.left = "0px";
+overlay.style.top = "0px";
 var rec = document.getElementById("rec");
 var videoID = document.getElementById("annoVideo");  
 var player = document.getElementById("playercontent");
+var contentButtons = document.getElementById("type-annotation");
 
 var buttonSimpleSam = document.getElementById("buttonsimplesam");
 var buttonEmojiSam = document.getElementById("buttonemojisam");
 
 buttonSimpleSam.style.backgroundColor  = "#ccc";
-rec.style.visibility = hidden;
+//rec.style.visibility = hidden;
+rec.src = "../img/norec.png";
+rec.style.height = "25px";
+rec.style.float = "right";
 
 
 
 //Creo gli array con tutte le Emoji (Arousal,Valence)
 function loadEmoji(type) {
     for (var i = 0; i < 17; i++){
-        arrayEmoji[i] = "../sprite/Emoji/"+type+"/" + (i+1) + ".png";
+        arrayEmoji[i] = "../sprite/Emoji/"+type+"/" + (i + 1) + ".png";
     }
-    img.src = arrayEmoji[8];
-    //img.style.height = "125px";
+    for (var i = 0; i < 5; i++) {
+        arraySam[i] = "../sprite/Sam/" + type + "/" + (i + 1) + ".png";
+    }
+    if (typeOverlay == "SAM") {
+        img.src = arraySam[3];
+    } else {
+        img.src = arrayEmoji[2];
+    }
     overlay.appendChild(img);
-    //overlay.style.height = "10px";
     overlay.style.visibility = "hidden";
     overlay.style.opacity = "0.5";
 }
 
 function showOverlay() {
     overlay.style.visibility = "visible";
-    overlay.style.left ="0px";
-    overlay.style.top = "0px";
 }
 
 function hiddenOverlay() {
@@ -72,19 +84,18 @@ function moveEmoji(jsonArray) {
         }, 5);
 }
 
-function updateEmoji(val, jsonArray) {
-
-    var rest = parseInt(val / 0.125);
-    img.src = arrayEmoji[8 + rest];
+function updateEmoji(val) {
+    var rest;
+    //Mi salvo l'ultimo valore dello slider.
+    currentSliderValue = val;
+    if (typeOverlay == "SAM") {
+         rest = parseInt(val / 0.4);
+         img.src = arraySam[2 + rest];
+    } else {
+        rest = parseInt(val / 0.125);
+        img.src = arrayEmoji[8 + rest];
+    }
     overlay.childNodes[0].src = img.src;
-}
-
-function scaleEmoji() {
-    //Leggo l'altezza e la larghezza del player.
-    var width = player.offsetWidth;
-    var height = player.offsetHeight;
-
-
 }
 
 function getFrameInJson(obj,frame) {
@@ -94,24 +105,32 @@ function getFrameInJson(obj,frame) {
 }
 
 function showRec(isVisible) {
-    rec.src = "../img/rec.png";
-    rec.style.height = "25px";
-    rec.style.float = "right";
+    if (isVisible == "visible")
+        rec.src = "../img/rec.png";
+    else
+        rec.src = "../img/norec.png";
+
     //img.style.height = "125px";
-    rec.style.visibility = isVisible;
+    //rec.style.visibility = isVisible;
+    if (isVisible) updateEmoji(currentSliderValue);
 }
 
 function simpleSam(type) {
     var imagesaming = document.getElementById("imagesaming");
     imagesaming.src = "../img/simplesam_" + type + ".png";
+    typeOverlay = "SAM";
     buttonSimpleSam.style.backgroundColor = "#ccc";
     buttonEmojiSam.style.backgroundColor = "white";
 }
 function emojiSam(type) {
     var imagesaming = document.getElementById("imagesaming");
     imagesaming.src = "../img/sam" + type + ".png";
+    typeOverlay = "EMOJI";
     buttonSimpleSam.style.backgroundColor = "white";
     buttonEmojiSam.style.backgroundColor = "#ccc";
+}
+function showButtons(isVisible) {
+    contentButtons.style.visibility = isVisible; 
 }
 
 

@@ -192,7 +192,7 @@
 							</script>
 							<!-- container per gli overlay delle sprite -->
 							<div id="overlay">
-								<img id="emoji"></img>
+								<img id="overlay-img"></img>
 							</div>
 							
 						</div>
@@ -267,12 +267,15 @@
 	 $('#annoSlider').toggleClass('with-focus');
 	 var clicks = $(this).data('clicks');
 	  if (clicks) {
+ 			hiddenOverlay();
 	  		showRec('hidden');
 	  } else {
+	  
+		  	showOverlay();
 	  		showRec('visible');
 	  }
-     $(this).data("clicks", !clicks);
 
+     $(this).data("clicks", !clicks);
     });
 
 
@@ -287,8 +290,8 @@
           }
           $("#slider").slider('setValue', val, true)
 		  //Aggiorno l'Emoji in base al valore assegnato dall'utente.
-		  updateEmoji(val,jsonArray);
-          //("#annoSlider").slider('refresh');          
+		  updateEmoji(val);
+          ("#annoSlider").slider('refresh');          
         }
     });
 
@@ -296,14 +299,15 @@
     $('#annoVideo').click(function() {
         if (this.paused) {
 			//Metodo implementato nella classe overlay-sprite.js
-			showOverlay();
+			//showOverlay();
             this.play();
+			showButtons("hidden");
 			moveEmoji(jsonArray);
 			var anno_time = (1 / <?php echo $GLOBALS['anno_rate'] ?>) * 1000;
             timer = setInterval(readVid, anno_time);
         }else{
 			this.pause();
-			hiddenOverlay();
+			showButtons("visible");
 		}
     });
 
