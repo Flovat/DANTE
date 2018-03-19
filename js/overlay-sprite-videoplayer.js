@@ -106,7 +106,7 @@ function getFrameInJson(obj,frame) {
 
 function showRec(isVisible) {
     if (isVisible == "visible")
-        rec.src = "../img/rec.png";
+        rec.src = "../img/yesrec.png";
     else
         rec.src = "../img/norec.png";
 
