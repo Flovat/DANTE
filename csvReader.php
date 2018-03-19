@@ -13,7 +13,7 @@ class position{
 	$vid = $_GET['vid'];
 	$name = explode(".",$vid)[0];
 	
-	//Open the file.
+	//Apro il file.
 	$fileHandle = fopen("openface/csv/reduced_".$name.".csv", "r");
 	$count = 0;
 	$allPositions = array();
@@ -33,8 +33,5 @@ class position{
 	$count ++;
 	$jsonArray = json_encode($allPositions);
 	}
-	/*foreach($allPositions as $aux){
-		echo $aux->frame . " : " . $aux->x0 . "<br>";
-	}*/
 ?>
 

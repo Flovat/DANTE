@@ -221,8 +221,8 @@
 	<!-- VideoFrame JavaScript -->
 	<script type="text/javascript" src="js/VideoFrame.js"></script>
 
-	<!-- OverlaySprite JavaScript -->
-	<script type="text/javascript" src="js/overlay-sprite-videoplayer.js"></script>
+	<!-- New Contents  JavaScript -->
+	<script type="text/javascript" src="js/new-contents.js"></script>
 	<!--Csv-Reader -->
 	<script type="text/javascript" src="js/read-csv.js"></script>
 
@@ -346,6 +346,9 @@
     video.on('ended', function() {
 	var json = JSON.stringify(arrayAnnot);
 	//console.log(json);
+
+	//Visualizzo nuovamente i pulsanti 
+	showButtons("visible");
 
 	clearInterval(timer);
 	

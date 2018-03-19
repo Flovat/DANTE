@@ -1,6 +1,7 @@
 
 /*!
- * Overlay the image on the player.
+ * New contents: caricamento delle sprite, overlay delle sprite nel video player, gestione dei pulsanti per la scelta del tipo di annotazione,
+ *               gestione del feedback registrazione.
  */
 var arrayEmoji = new Array(17);
 var arraySam = new Array(5);
@@ -54,7 +55,7 @@ function hiddenOverlay() {
 }
 
 
-
+//Gestisco il movimento della sprite leggendo le posizioni dal json.
 function moveEmoji(jsonArray) {
     var jsonArrayJS = JSON.parse(jsonArray);
     //Inizializzo l'oggetto di tipo video (VideoFrame) per poter ottenere il frame corrente del video.
@@ -84,6 +85,7 @@ function moveEmoji(jsonArray) {
         }, 5);
 }
 
+//Cambio di sprite in basa all'annotazione dell'utente.
 function updateEmoji(val) {
     var rest;
     //Mi salvo l'ultimo valore dello slider.
@@ -98,12 +100,14 @@ function updateEmoji(val) {
     overlay.childNodes[0].src = img.src;
 }
 
+//Costruisco un oggetto con le informaizoni sul frame corrente dal json.
 function getFrameInJson(obj,frame) {
     return obj.filter(
         function (obj) { return obj.frame == frame }
     );
 }
 
+//Rec image
 function showRec(isVisible) {
     if (isVisible == "visible")
         rec.src = "../img/yesrec.png";
@@ -115,6 +119,7 @@ function showRec(isVisible) {
     if (isVisible) updateEmoji(currentSliderValue);
 }
 
+//Cambio imagesaming, in base al tipo di annotazione che l'utente vuole svolgere.
 function simpleSam(type) {
     var imagesaming = document.getElementById("imagesaming");
     imagesaming.src = "../img/simplesam_" + type + ".png";
@@ -129,6 +134,8 @@ function emojiSam(type) {
     buttonSimpleSam.style.backgroundColor = "white";
     buttonEmojiSam.style.backgroundColor = "#ccc";
 }
+
+//Hide e show dei bottoni.
 function showButtons(isVisible) {
     contentButtons.style.visibility = isVisible; 
 }
