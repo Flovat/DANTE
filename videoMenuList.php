@@ -5,7 +5,7 @@
 		if($row['name'] == "Example.mp4"){
 			echo 
           '<li>'
-            . '<a href="index.php?id='.$id.'&vid='.$row['name'].'&type=example">'
+            . '<a href="index.php?id='.$id.'&vid='.$row['name'].'&type=valence">'
             . (Model::doesAnnotationExist($id,$row['name'],'arousal') ?  
               '<span class="glyphicon glyphicon-ok" aria-hidden="true"></span> ' :
               '<span class="glyphicon glyphicon-unchecked" aria-hidden="true"></span> ')

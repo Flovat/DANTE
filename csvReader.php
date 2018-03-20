@@ -14,13 +14,12 @@ class position{
 	$name = explode(".",$vid)[0];
 	
 	//Apro il file, se non ho caricato il video di esempio.
-	if($name != "Example"){
 		$fileHandle = fopen("openface/csv/reduced_".$name.".csv", "r");
 		$count = 0;
 		$allPositions = array();
 
 
-		while(($row = fgetcsv($fileHandle,0,",")) != FALSE){
+	while(($row = fgetcsv($fileHandle,0,",")) != FALSE){
 		if($count != 0){
 			//echo $row[0] . "<br>";
 			$pos = new position();
@@ -33,7 +32,6 @@ class position{
 		}
 		$count ++;
 		$jsonArray = json_encode($allPositions);
-		}
 	}
 ?>
 

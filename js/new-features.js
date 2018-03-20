@@ -26,24 +26,11 @@ rec.src = "../img/norec.png";
 rec.style.height = "25px";
 rec.style.float = "right";
 
-//Nascondo lo slider se sto mostrando il video d'esempio.
-function hideLayout(type) { 
-    if (type == "example") {
-        //document.getElementById("slider").style.visibility = "hidden";
-        showButtons("hidden");
-    } else {
-        //document.getElementById("slider").style.visibility = "visible";
-    }
-    overlay.style.visibility = "visible";
-    overlay.style.fontSize = "50px";
-    overlay.innerHTML = type;
-}
 
 //Creo gli array con tutte le Emoji (Arousal,Valence)
 function loadEmoji(type) {
     currentType = type;
-    hideLayout(type);
-    if (type != "example") {
+   
         for (var i = 0; i < 17; i++) {
             arrayEmoji[i] = "../sprite/Emoji/" + type + "/" + (i + 1) + ".png";
         }
@@ -58,7 +45,6 @@ function loadEmoji(type) {
         overlay.appendChild(img);
         overlay.style.visibility = "hidden";
         overlay.style.opacity = "0.5";
-    }
 }
 
 function showOverlay() {
@@ -72,7 +58,6 @@ function hiddenOverlay() {
 
 //Gestisco il movimento della sprite leggendo le posizioni dal json.
 function moveEmoji(jsonArray) {
-    if (currentType != "example") {
         var jsonArrayJS = JSON.parse(jsonArray);
         //Inizializzo l'oggetto di tipo video (VideoFrame) per poter ottenere il frame corrente del video.
         var video = VideoFrame({
@@ -99,12 +84,10 @@ function moveEmoji(jsonArray) {
                 overlay.style.top = y + "px";
                 //document.getElementById("overlay").style.transition = "all 0.1s";  
             }, 5);
-    }
 }
 
 //Cambio di sprite in basa all'annotazione dell'utente.
 function updateEmoji(val) {
-    if (currentType != "example") {
         var rest;
         //Mi salvo l'ultimo valore dello slider.
         currentSliderValue = val;
@@ -116,7 +99,6 @@ function updateEmoji(val) {
             img.src = arrayEmoji[8 + rest];
         }
         overlay.childNodes[0].src = img.src;
-    }
 }
 
 //Costruisco un oggetto con le informaizoni sul frame corrente dal json.
@@ -140,22 +122,18 @@ function showRec(isVisible) {
 
 //Cambio imagesaming, in base al tipo di annotazione che l'utente vuole svolgere.
 function simpleSam(type) {
-    if(type != "example"){
         var imagesaming = document.getElementById("imagesaming");
         imagesaming.src = "../img/simplesam_" + type + ".png";
         typeOverlay = "SAM";
         buttonSimpleSam.style.backgroundColor = "#ccc";
         buttonEmojiSam.style.backgroundColor = "white";
-    }
 }
 function emojiSam(type) {
-    if (type != "example") {
         var imagesaming = document.getElementById("imagesaming");
         imagesaming.src = "../img/sam" + type + ".png";
         typeOverlay = "EMOJI";
         buttonSimpleSam.style.backgroundColor = "white";
         buttonEmojiSam.style.backgroundColor = "#ccc";
-    }
 }
 
 //Hide e show dei bottoni.
