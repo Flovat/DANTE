@@ -16,9 +16,10 @@ var rec = document.getElementById("rec");
 var videoID = document.getElementById("annoVideo");  
 var player = document.getElementById("playercontent");
 var contentButtons = document.getElementById("type-annotation");
-
 var buttonSimpleSam = document.getElementById("buttonsimplesam");
 var buttonEmojiSam = document.getElementById("buttonemojisam");
+
+var currentType;
 
 buttonSimpleSam.style.backgroundColor  = "#ccc";
 //rec.style.visibility = hidden;
@@ -26,24 +27,39 @@ rec.src = "../img/norec.png";
 rec.style.height = "25px";
 rec.style.float = "right";
 
-
+//Nascondo lo slider se sto mostrando il video d'esempio.
+function hideLayout(type) {
+    
+    if (type == "example") {
+        document.getElementById("slider").style.visibility = "hidden";
+        showButtons("hidden");
+    } else {
+        document.getElementById("slider").style.visibility = "visible";
+    }
+    overlay.style.visibility = "visible";
+    //overlay.innerHTML = "PORCO DIO";
+}
 
 //Creo gli array con tutte le Emoji (Arousal,Valence)
 function loadEmoji(type) {
-    for (var i = 0; i < 17; i++){
-        arrayEmoji[i] = "../sprite/Emoji/"+type+"/" + (i + 1) + ".png";
+    currentType = type;
+    hideLayout(type);
+    if(type != "example"){
+        for (var i = 0; i < 17; i++){
+            arrayEmoji[i] = "../sprite/Emoji/"+type+"/" + (i + 1) + ".png";
+        }
+        for (var i = 0; i < 5; i++) {
+            arraySam[i] = "../sprite/Sam/" + type + "/" + (i + 1) + ".png";
+        }
+        if (typeOverlay == "SAM") {
+            img.src = arraySam[3];
+        } else {
+            img.src = arrayEmoji[2];
+        }
+        overlay.appendChild(img);
+        overlay.style.visibility = "hidden";
+        overlay.style.opacity = "0.5";
     }
-    for (var i = 0; i < 5; i++) {
-        arraySam[i] = "../sprite/Sam/" + type + "/" + (i + 1) + ".png";
-    }
-    if (typeOverlay == "SAM") {
-        img.src = arraySam[3];
-    } else {
-        img.src = arrayEmoji[2];
-    }
-    overlay.appendChild(img);
-    overlay.style.visibility = "hidden";
-    overlay.style.opacity = "0.5";
 }
 
 function showOverlay() {
@@ -57,47 +73,51 @@ function hiddenOverlay() {
 
 //Gestisco il movimento della sprite leggendo le posizioni dal json.
 function moveEmoji(jsonArray) {
-    var jsonArrayJS = JSON.parse(jsonArray);
-    //Inizializzo l'oggetto di tipo video (VideoFrame) per poter ottenere il frame corrente del video.
-    var video = VideoFrame({
-        id: 'annoVideo',
-        frameRate: FrameRates.film,
-        callback: function (response) {
-            console.log('callback response: ' + response);
-        }
-    });
+    if (currentType != "example"){
+        var jsonArrayJS = JSON.parse(jsonArray);
+        //Inizializzo l'oggetto di tipo video (VideoFrame) per poter ottenere il frame corrente del video.
+        var video = VideoFrame({
+            id: 'annoVideo',
+            frameRate: FrameRates.film,
+            callback: function (response) {
+                console.log('callback response: ' + response);
+            }
+        });
 
-    var animation = setInterval(
-    function () {
-        if (videoID.paused) {
-            clearInterval(animation);
-        }
-        var currentJsonByFrame = getFrameInJson(jsonArrayJS, video.get());
+        var animation = setInterval(
+        function () {
+            if (videoID.paused) {
+                clearInterval(animation);
+            }
+            var currentJsonByFrame = getFrameInJson(jsonArrayJS, video.get());
 
-        var widthPlayer = document.getElementById("playercontent").offsetWidth;
-        //overlay.innerHTML = widthPlayer;
-        var x = parseFloat(currentJsonByFrame[0].x0);
-        var y = parseFloat(currentJsonByFrame[0].y0);
-        //x = x - 100;
-        overlay.style.left = x + "px";
-        overlay.style.top = y + "px";
-        //document.getElementById("overlay").style.transition = "all 0.1s";  
-        }, 5);
+            var widthPlayer = document.getElementById("playercontent").offsetWidth;
+            //overlay.innerHTML = widthPlayer;
+            var x = parseFloat(currentJsonByFrame[0].x0);
+            var y = parseFloat(currentJsonByFrame[0].y0);
+            //x = x - 100;
+            overlay.style.left = x + "px";
+            overlay.style.top = y + "px";
+            //document.getElementById("overlay").style.transition = "all 0.1s";  
+            }, 5);
+    }
 }
 
 //Cambio di sprite in basa all'annotazione dell'utente.
 function updateEmoji(val) {
-    var rest;
-    //Mi salvo l'ultimo valore dello slider.
-    currentSliderValue = val;
-    if (typeOverlay == "SAM") {
-         rest = parseInt(val / 0.4);
-         img.src = arraySam[2 + rest];
-    } else {
-        rest = parseInt(val / 0.125);
-        img.src = arrayEmoji[8 + rest];
+    if (currentType != "example") {
+        var rest;
+        //Mi salvo l'ultimo valore dello slider.
+        currentSliderValue = val;
+        if (typeOverlay == "SAM") {
+            rest = parseInt(val / 0.4);
+            img.src = arraySam[2 + rest];
+        } else {
+            rest = parseInt(val / 0.125);
+            img.src = arrayEmoji[8 + rest];
+        }
+        overlay.childNodes[0].src = img.src;
     }
-    overlay.childNodes[0].src = img.src;
 }
 
 //Costruisco un oggetto con le informaizoni sul frame corrente dal json.

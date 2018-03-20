@@ -222,7 +222,7 @@
 	<script type="text/javascript" src="js/VideoFrame.js"></script>
 
 	<!-- New Contents  JavaScript -->
-	<script type="text/javascript" src="js/new-contents.js"></script>
+	<script type="text/javascript" src="js/new-features.js"></script>
 	<!--Csv-Reader -->
 	<script type="text/javascript" src="js/read-csv.js"></script>
 
@@ -246,6 +246,8 @@
                 Cookies.set('modal_shown', 'yes', { expires: 7, path: '/' });
             }
         });
+		/*Controllo se sto visualizzando il video di esempio per cambiare il layout.*/
+		
     });
 
     // handle sidebar
@@ -353,7 +355,7 @@
 	clearInterval(timer);
 	
 	$('#saving').fadeIn();
-
+	
 	$.ajax({
 	    type: "POST",
 	    url: "saveAnnotation.php",
@@ -371,6 +373,7 @@
 	    }
 	});
     });
+
 
     </script>
 

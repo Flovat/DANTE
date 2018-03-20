@@ -13,25 +13,27 @@ class position{
 	$vid = $_GET['vid'];
 	$name = explode(".",$vid)[0];
 	
-	//Apro il file.
-	$fileHandle = fopen("openface/csv/reduced_".$name.".csv", "r");
-	$count = 0;
-	$allPositions = array();
+	//Apro il file, se non ho caricato il video di esempio.
+	if($name != "Example"){
+		$fileHandle = fopen("openface/csv/reduced_".$name.".csv", "r");
+		$count = 0;
+		$allPositions = array();
 
 
-	while(($row = fgetcsv($fileHandle,0,",")) != FALSE){
-	if($count != 0){
-		//echo $row[0] . "<br>";
-		$pos = new position();
-		$pos->frame = $row[0];
-		$pos->x0 = $row[2];
-		$pos->x1 = $row[3];
-		$pos->y0 = $row[4];
-		$pos->y1 = $row[5];
-		array_push($allPositions,$pos);
-	}
-	$count ++;
-	$jsonArray = json_encode($allPositions);
+		while(($row = fgetcsv($fileHandle,0,",")) != FALSE){
+		if($count != 0){
+			//echo $row[0] . "<br>";
+			$pos = new position();
+			$pos->frame = $row[0];
+			$pos->x0 = $row[2];
+			$pos->x1 = $row[3];
+			$pos->y0 = $row[4];
+			$pos->y1 = $row[5];
+			array_push($allPositions,$pos);
+		}
+		$count ++;
+		$jsonArray = json_encode($allPositions);
+		}
 	}
 ?>
 
