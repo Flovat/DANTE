@@ -5,7 +5,16 @@
 var arrayEmoji = new Array(17);
 var arraySam = new Array(5);
 //Controllo se sovrapporre Emoji o SimpleSAM
-var typeOverlay = "SAM";
+var overlay = {
+    SAM: 1,
+    EMOJI: 2,
+};
+var typeOverlay = overlay.SAM;
+var annotation = {
+    YOU: 1,
+    EXPERT: 2,
+};
+var typeAnnotation = annotation.YOU;
 var currentSliderValue = 0.0;
 var img = document.getElementById("overlay-img");
 var overlay = document.getElementById("overlay");
@@ -17,9 +26,14 @@ var player = document.getElementById("playercontent");
 var contentButtons = document.getElementById("type-annotation");
 var buttonSimpleSam = document.getElementById("buttonsimplesam");
 var buttonEmojiSam = document.getElementById("buttonemojisam");
+var buttonyouannotation = document.getElementById("buttonyouannotation");
+var buttonexpertannotation = document.getElementById("buttonexpertannotation");
+var slidercontent = document.getElementById("slider-content");
 
 var currentType;
 
+//Inizializzo il focus sui bottoni.
+buttonyouannotation.style.backgroundColor = "#ccc";
 buttonSimpleSam.style.backgroundColor = "#ccc";
 //rec.style.visibility = hidden;
 rec.src = "../img/norec.png";
@@ -37,7 +51,7 @@ function loadEmoji(type) {
         for (var i = 0; i < 5; i++) {
             arraySam[i] = "../sprite/Sam/" + type + "/" + (i + 1) + ".png";
         }
-        if (typeOverlay == "SAM") {
+        if (typeOverlay == overlay.SAM) {
             img.src = arraySam[3];
         } else {
             img.src = arrayEmoji[2];
@@ -47,18 +61,20 @@ function loadEmoji(type) {
         overlay.style.opacity = "0.5";
 }
 
-function showOverlay() {
-    overlay.style.visibility = "visible";
+function showOverlay(type) {
+    overlay.style.visibility = type;
 }
 
-function hiddenOverlay() {
-    overlay.style.visibility = "hidden";
-}
 
 
 //Gestisco il movimento della sprite leggendo le posizioni dal json.
-function moveEmoji(jsonArray) {
-        var jsonArrayJS = JSON.parse(jsonArray);
+function moveEmoji(jsonArrayPosition, jsonArrayExpert) {
+    var jsonArrayUS = JSON.parse(jsonArrayPosition);
+    var jsonArrayEX = JSON.parse(jsonArrayExpert);
+
+    if (typeAnnotation == 2) {
+            showOverlay("visible");
+        }
         //Inizializzo l'oggetto di tipo video (VideoFrame) per poter ottenere il frame corrente del video.
         var video = VideoFrame({
             id: 'annoVideo',
@@ -70,10 +86,8 @@ function moveEmoji(jsonArray) {
 
         var animation = setInterval(
             function () {
-                if (videoID.paused) {
-                    clearInterval(animation);
-                }
-                var currentJsonByFrame = getFrameInJson(jsonArrayJS, video.get());
+
+                var currentJsonByFrame = getFrameInJson(jsonArrayUS, video.get());
 
                 var widthPlayer = document.getElementById("playercontent").offsetWidth;
                 //overlay.innerHTML = widthPlayer;
@@ -83,22 +97,35 @@ function moveEmoji(jsonArray) {
                 overlay.style.left = x + "px";
                 overlay.style.top = y + "px";
                 //document.getElementById("overlay").style.transition = "all 0.1s";  
+
+                //Annotation Expert.
+                //Se l'utente ha scelto di farsi trainare dall'annotazione dell'esperto.
+                if (typeAnnotation == 2) {
+                    var currentExpertJsonByFrame = getFrameInJson(jsonArrayEX, video.get());
+                    updateEmoji(parseFloat(currentExpertJsonByFrame[0].value));
+                }
+
+                if (videoID.paused) {
+                    clearInterval(animation);
+                }
+
             }, 5);
 }
 
 //Cambio di sprite in basa all'annotazione dell'utente.
-function updateEmoji(val) {
-        var rest;
-        //Mi salvo l'ultimo valore dello slider.
-        currentSliderValue = val;
-        if (typeOverlay == "SAM") {
-            rest = parseInt(val / 0.4);
-            img.src = arraySam[2 + rest];
-        } else {
-            rest = parseInt(val / 0.125);
-            img.src = arrayEmoji[8 + rest];
-        }
-        overlay.childNodes[0].src = img.src;
+function updateEmoji(value) {
+    var rest;
+    //Controllo se sono io a dover fare l'annotazione oppure se sono trainato dall'esperto.
+    //Mi salvo l'ultimo valore dello slider.
+    currentSliderValue = value;
+    if (typeOverlay == 1) {
+        rest = parseInt(value / 0.4);
+        img.src = arraySam[2 + rest];
+    } else {
+        rest = parseInt(value / 0.125);
+        img.src = arrayEmoji[8 + rest];
+    }
+    overlay.childNodes[0].src = img.src;
 }
 
 //Costruisco un oggetto con le informaizoni sul frame corrente dal json.
@@ -124,16 +151,34 @@ function showRec(isVisible) {
 function simpleSam(type) {
         var imagesaming = document.getElementById("imagesaming");
         imagesaming.src = "../img/simplesam_" + type + ".png";
-        typeOverlay = "SAM";
+        typeOverlay = overlay.SAM;
         buttonSimpleSam.style.backgroundColor = "#ccc";
         buttonEmojiSam.style.backgroundColor = "white";
 }
 function emojiSam(type) {
         var imagesaming = document.getElementById("imagesaming");
         imagesaming.src = "../img/sam" + type + ".png";
-        typeOverlay = "EMOJI";
+        typeOverlay = overlay.EMOJI;
         buttonSimpleSam.style.backgroundColor = "white";
         buttonEmojiSam.style.backgroundColor = "#ccc";
+}
+
+function youAnnotation() {
+    typeAnnotation = annotation.YOU;
+    slidercontent.style.visibility = "visible";
+    buttonexpertannotation.style.backgroundColor = "white";
+    buttonyouannotation.style.backgroundColor = "#ccc";
+}
+
+function expertAnnotation() {
+    typeAnnotation = annotation.EXPERT;
+    slidercontent.style.visibility = "hidden";
+    buttonyouannotation.style.backgroundColor = "white";
+    buttonexpertannotation.style.backgroundColor = "#ccc";
+}
+
+function needWriteAnnotation() {
+    return (typeAnnotation == 1) ? true : false;
 }
 
 //Hide e show dei bottoni.

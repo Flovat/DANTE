@@ -30,7 +30,7 @@
     <!-- Custom CSS -->
     <link href="css/simple-sidebar.css" rel="stylesheet">
     <link href="css/main.css" rel="stylesheet">
-	<link href="css/overlay-img.css" rel="stylesheet">
+	<link href="css/new-features.css" rel="stylesheet">
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -145,10 +145,22 @@
 						<!-- Bottoni per la scelta del tipo di annotazione. -->
 						<div id="type-annotation">
 								<p>
-									<a id="buttonsimplesam" href="#"  onclick= "simpleSam($_GET['type'])">SIMPLE SAM</a>
-									</p>
-									<p>
-									<a  id="buttonemojisam" href="#"  onclick= "emojiSam($_GET['type'])">EMOJI SAM</a>
+									Measuring emotions scale:
+								</p>
+								<p>
+									<a id="buttonsimplesam" href="#"  onclick= "simpleSam($_GET['type'])">SAM SCALE</a>
+								</p>
+								<p>
+									<a  id="buttonemojisam" href="#"  onclick= "emojiSam($_GET['type'])">EMOJI SCALE</a>
+								</p>
+								<p>
+									Annotator:
+								</p>
+								<p>
+									<a  id="buttonyouannotation" href="#"  onclick= "youAnnotation()">YOU</a>
+								</p>
+								<p>
+									<a  id="buttonexpertannotation" href="#"  onclick= "expertAnnotation()">EXPERT</a>
 								</p>
 						</div>
 
@@ -177,9 +189,7 @@
 							<!--Sezione che carica il titolo del video e il video stesso-->
 							
 							<!-- Caricamento del video player -->
-							<?php include './videoPlayer.php'; ?>
-
-							
+							<?php include './videoPlayer.php'; ?>						
 							
 							<!--Caricamento del file csv per determinare la bounding box della faccia, dove applicare la Emoji.-->
 							<?php include './csvReader.php'; ?>
@@ -187,7 +197,8 @@
 							<!--Prendo il json creato salvandolo -->
 							<script type="text/javascript">
 								var $_GET = <?php echo json_encode($_GET); ?>;
-								var jsonArray = <?php echo json_encode($jsonArray) ?>;
+								var jsonArrayPosition = <?php echo json_encode($jsonArrayPosition) ?>;
+								var jsonArrayExpert = <?php echo json_encode($jsonArrayExpert) ?>;
 								//document.write(ar);
 							</script>
 							<!-- container per gli overlay delle sprite -->
@@ -197,8 +208,10 @@
 							
 						</div>
                         <!--Includo la slidebar e il suo funzioanmento, registrando automaticamente i valori dentro valSlidebar-->
-                        <?php include './slidebar.php'; ?>
-                    </div>
+						
+							<?php include './slidebar.php'; ?>
+						
+					</div>
 
                 </div>             
             </div>
@@ -269,11 +282,11 @@
 	 $('#annoSlider').toggleClass('with-focus');
 	 var clicks = $(this).data('clicks');
 	  if (clicks) {
- 			hiddenOverlay();
+ 			showOverlay("hidden");
 	  		showRec('hidden');
 	  } else {
 	  
-		  	showOverlay();
+		  	showOverlay("visible");
 	  		showRec('visible');
 	  }
 
@@ -291,7 +304,7 @@
             val = -1;
           }
           $("#slider").slider('setValue', val, true)
-		  //Aggiorno l'Emoji in base al valore assegnato dall'utente.
+		  //Aggiorno l'Emoji in base al valore assegnato dall'utente, il secondo parametro sta ad indicare il valore attribuito dall'esperto.
 		  updateEmoji(val);
           ("#annoSlider").slider('refresh');          
         }
@@ -301,13 +314,15 @@
     $('#annoVideo').click(function() {
         if (this.paused) {
 			//Metodo implementato nella classe overlay-sprite.js
-			//showOverlay();
             this.play();
 			showButtons("hidden");
-			moveEmoji(jsonArray);
+			moveEmoji(jsonArrayPosition,jsonArrayExpert);
 			var anno_time = (1 / <?php echo $GLOBALS['anno_rate'] ?>) * 1000;
-            timer = setInterval(readVid, anno_time);
-        }else{
+			//Controllo se è necessatio annotare, oppure se l'utente sta guardando un video esperto.
+			if(needWriteAnnotation()){
+				timer = setInterval(readVid, anno_time);
+			}
+		}else{
 			this.pause();
 			showButtons("visible");
 		}
@@ -327,12 +342,12 @@
         };
 
     function readVid() {
-        currentTime  = document.getElementById("annoVideo").currentTime;
-        currentValue = $('#slider').slider('getValue');
+			currentTime  = document.getElementById("annoVideo").currentTime;
+			currentValue = $('#slider').slider('getValue');
 
-        arrayAnnot.valvid.push({timeStamp:currentTime, value: currentValue});
+			arrayAnnot.valvid.push({timeStamp:currentTime, value: currentValue});
 
-        console.log(currentTime + ' - ' + currentValue);
+			console.log(currentTime + ' - ' + currentValue);
     }
 
     var video = $('#annoVideo');
@@ -346,32 +361,35 @@
     });
 
     video.on('ended', function() {
-	var json = JSON.stringify(arrayAnnot);
-	//console.log(json);
 
-	//Visualizzo nuovamente i pulsanti 
-	showButtons("visible");
+		//Visualizzo nuovamente i pulsanti 
+		showButtons("visible");
+		showOverlay("hidden");
 
-	clearInterval(timer);
+		if(needWriteAnnotation()){
+			var json = JSON.stringify(arrayAnnot);
+			//console.log(json);
+			clearInterval(timer);
 	
-	$('#saving').fadeIn();
+			$('#saving').fadeIn();
 	
-	$.ajax({
-	    type: "POST",
-	    url: "saveAnnotation.php",
-	    data: {data : json}, 
-	    cache: false,
-	    success: function (response) {
-	        $('#saving').fadeOut(function() {$('#success-alert').fadeIn()});
-	        /*setTimeout(function() {
-	            window.location.reload();
-	        }, 1000);                */
-	    },
-	    error: function (xhr, ajaxOptions, thrownError) {
-	        $('#saving').fadeOut(function() {$('#error-alert').fadeIn()});
-	        console.log(xhr.responseText);
-	    }
-	});
+			$.ajax({
+				type: "POST",
+				url: "saveAnnotation.php",
+				data: {data : json}, 
+				cache: false,
+				success: function (response) {
+					$('#saving').fadeOut(function() {$('#success-alert').fadeIn()});
+					/*setTimeout(function() {
+						window.location.reload();
+					}, 1000);                */
+				},
+				error: function (xhr, ajaxOptions, thrownError) {
+					$('#saving').fadeOut(function() {$('#error-alert').fadeIn()});
+					console.log(xhr.responseText);
+				}
+			});
+		}
     });
 
 

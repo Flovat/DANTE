@@ -3,10 +3,10 @@
             $start_lbl = ($_GET['type'] == "arousal") ? 'Very Passive' : 'Very Negative';
             $end_lbl   = ($_GET['type'] == "arousal") ? 'Very Active' : 'Very Positive';
         ?>
-
-        <input onblur="this.focus()" autofocus id="slider" data-slider-id='annoSlider' type="text" data-slider-min="-1" data-slider-max="1" data-slider-step="0.001" data-slider-value="0" data-slider-ticks="[-1, 0, 1]"
-        data-slider-ticks-labels='["<b><?php echo $start_lbl ?></b>", "0", "<b><?php echo $end_lbl ?></b>"]'/>
-
+		<div id="slider-content">
+			<input onblur="this.focus()" autofocus id="slider" data-slider-id='annoSlider' type="text" data-slider-min="-1" data-slider-max="1" data-slider-step="0.001" data-slider-value="0" data-slider-ticks="[-1, 0, 1]"
+			data-slider-ticks-labels='["<b><?php echo $start_lbl ?></b>", "0", "<b><?php echo $end_lbl ?></b>"]'/>
+		</div>
         <!--carico immagine del sam in base al tipo di video-->
         <div class="sam">
                 <?php 

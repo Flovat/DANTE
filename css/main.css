@@ -60,7 +60,9 @@ video{
     position:relative;
     padding-top:20px;
 }
-#type-annotation p {}
+#type-annotation p {
+    font-size:18px;
+}
       
 #type-annotation p a {
     font-size: 20px;
