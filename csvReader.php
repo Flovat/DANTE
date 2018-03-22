@@ -44,8 +44,8 @@ class expertValue{
 	}
 
 	//Apro il file degli esperti corrispondente, se esiste.
-	if(file_exists("annotation/expert/".$name."_".$type."_expert.csv")){
-		$fileHandle = fopen("annotation/expert/".$name."_".$type."_expert.csv", "r");
+	if(file_exists("annotation/expert/expert_".$type."_".$name.".csv")){
+		$fileHandle = fopen("annotation/expert/expert_".$type."_".$name.".csv", "r");
 		$count = 0;
 		$allExpertValue = array();
 
