@@ -283,35 +283,37 @@
     });
 
     $('#annoSlider').click(function(e) {
-	 $('#annoSlider').toggleClass('with-focus');
-	 var clicks = $(this).data('clicks');
-	  if (clicks) {
- 			showOverlay("hidden");
-	  		showRec('hidden');
-	  } else {
-	  
-		  	showOverlay("visible");
-	  		showRec('visible');
-	  }
-
-     $(this).data("clicks", !clicks);
+		if(!$('#annoVideo').get(0).paused){
+			$('#annoSlider').toggleClass('with-focus');
+			 var clicks = $(this).data('clicks');
+			  if (clicks) {
+ 					showOverlay("hidden");
+	  				showRec('hidden');
+			  } else {
+		  			showOverlay("visible");
+	  				showRec('visible');
+			  }
+			 $(this).data("clicks", !clicks);
+		  }
     });
 
 
     $(document).mousemove(function(e) {
-        if ($("#annoSlider").hasClass("with-focus")) {
-          val = ((e.clientX - $("#annoSlider").offset().left) / $("#annoSlider").width()) * 2 - 1;
-          if (val > 1) {
-            val = 1;
-          }
-          if (val < -1) {
-            val = -1;
-          }
-          $("#slider").slider('setValue', val, true)
-		  //Aggiorno l'Emoji in base al valore assegnato dall'utente, il secondo parametro sta ad indicare il valore attribuito dall'esperto.
-		  updateEmoji(val);
-          ("#annoSlider").slider('refresh');          
-        }
+		if(!$('#annoVideo').get(0).paused){
+			if ($("#annoSlider").hasClass("with-focus")) {
+			  val = ((e.clientX - $("#annoSlider").offset().left) / $("#annoSlider").width()) * 2 - 1;
+			  if (val > 1) {
+				val = 1;
+			  }
+			  if (val < -1) {
+				val = -1;
+			  }
+			  $("#slider").slider('setValue', val, true);
+			  //Aggiorno l'Emoji in base al valore assegnato dall'utente, il secondo parametro sta ad indicare il valore attribuito dall'esperto.
+			  updateEmoji(val);
+			  ("#annoSlider").slider('refresh');          
+			}
+		}
     });
 
     // start play when video is clicked
@@ -366,9 +368,14 @@
 
     video.on('ended', function() {
 
-		//Visualizzo nuovamente i pulsanti 
+		//Pulisco la vista al termina della visualizzazione del video.
 		showButtons("visible");
 		showOverlay("hidden");
+		showRec('hidden');
+		$('#annoSlider').removeClass('with-focus');
+		$('#annoSlider').removeData();
+		$("#slider").slider('setValue', 0, true);
+		$("#annoSlider").slider('refresh');	
 
 		if(needWriteAnnotation()){
 			var json = JSON.stringify(arrayAnnot);
