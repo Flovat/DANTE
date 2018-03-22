@@ -253,7 +253,11 @@
 
 		/*Quando la pagina è pronta carico le Emoji corrispondenti attraverso il metodo loadEmoji di overlay-sprite-videoplayer.js.*/
 		loadEmoji($_GET['type']);
-        
+        if(jsonArrayExpert != null) 
+			isThereExpertAnnotation(true);
+		else
+			isThereExpertAnnotation(false);
+
 		$('#helpModal').on('hidden.bs.modal', function (e) {
             if ($("input[name=dismiss]", this).is(":checked")) {
                 Cookies.set('modal_shown', 'yes', { expires: 7, path: '/' });
@@ -322,10 +326,10 @@
 			if(needWriteAnnotation()){
 				timer = setInterval(readVid, anno_time);
 			}
-		}else{
+		}/*else{
 			this.pause();
 			showButtons("visible");
-		}
+		}*/
     });
 
     // update slider UI when show/hide sidebar    

@@ -63,6 +63,7 @@ class expertValue{
 			$jsonArrayExpert = json_encode($allExpertValue);
 		}
 	}else{
+		$jsonArrayExpert = null;
 		echo "Expert file does not exist.<br>";
 	}
 ?>

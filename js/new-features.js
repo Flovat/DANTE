@@ -5,11 +5,11 @@
 var arrayEmoji = new Array(17);
 var arraySam = new Array(5);
 //Controllo se sovrapporre Emoji o SimpleSAM
-var overlay = {
+var scaleEmotions = {
     SAM: 1,
     EMOJI: 2,
 };
-var typeOverlay = overlay.SAM;
+var typeOverlay = scaleEmotions.SAM;
 var annotation = {
     YOU: 1,
     EXPERT: 2,
@@ -17,9 +17,9 @@ var annotation = {
 var typeAnnotation = annotation.YOU;
 var currentSliderValue = 0.0;
 var img = document.getElementById("overlay-img");
-var overlay = document.getElementById("overlay");
-overlay.style.left = "0px";
-overlay.style.top = "0px";
+var overlayContent = document.getElementById("overlay");
+overlayContent.style.left = "0px";
+overlayContent.style.top = "0px";
 var rec = document.getElementById("rec");
 var videoID = document.getElementById("annoVideo");
 var player = document.getElementById("playercontent");
@@ -29,8 +29,8 @@ var buttonEmojiSam = document.getElementById("buttonemojisam");
 var buttonyouannotation = document.getElementById("buttonyouannotation");
 var buttonexpertannotation = document.getElementById("buttonexpertannotation");
 var slidercontent = document.getElementById("slider-content");
-
 var currentType;
+var isExpert = false;
 
 //Inizializzo il focus sui bottoni.
 buttonyouannotation.style.backgroundColor = "#ccc";
@@ -51,18 +51,18 @@ function loadEmoji(type) {
         for (var i = 0; i < 5; i++) {
             arraySam[i] = "../sprite/Sam/" + type + "/" + (i + 1) + ".png";
         }
-        if (typeOverlay == overlay.SAM) {
+        if (typeOverlay == 1) {
             img.src = arraySam[3];
         } else {
-            img.src = arrayEmoji[2];
+            img.src = arrayEmoji[8];
         }
-        overlay.appendChild(img);
-        overlay.style.visibility = "hidden";
-        overlay.style.opacity = "0.5";
+        overlayContent.appendChild(img);
+        overlayContent.style.visibility = "hidden";
+        overlayContent.style.opacity = "0.5";
 }
 
 function showOverlay(type) {
-    overlay.style.visibility = type;
+    overlayContent.style.visibility = type;
 }
 
 
@@ -70,7 +70,8 @@ function showOverlay(type) {
 //Gestisco il movimento della sprite leggendo le posizioni dal json.
 function moveEmoji(jsonArrayPosition, jsonArrayExpert) {
     var jsonArrayUS = JSON.parse(jsonArrayPosition);
-    var jsonArrayEX = JSON.parse(jsonArrayExpert);
+    if (isExpert)
+        var jsonArrayEX = JSON.parse(jsonArrayExpert);
 
     if (typeAnnotation == 2) {
             showOverlay("visible");
@@ -94,15 +95,17 @@ function moveEmoji(jsonArrayPosition, jsonArrayExpert) {
                 var x = parseFloat(currentJsonByFrame[0].x0);
                 var y = parseFloat(currentJsonByFrame[0].y0);
                 //x = x - 100;
-                overlay.style.left = x + "px";
-                overlay.style.top = y + "px";
+                overlayContent.style.left = x + "px";
+                overlayContent.style.top = y + "px";
                 //document.getElementById("overlay").style.transition = "all 0.1s";  
 
                 //Annotation Expert.
                 //Se l'utente ha scelto di farsi trainare dall'annotazione dell'esperto.
                 if (typeAnnotation == 2) {
-                    var currentExpertJsonByFrame = getFrameInJson(jsonArrayEX, video.get());
-                    updateEmoji(parseFloat(currentExpertJsonByFrame[0].value));
+                    if (isExpert) {
+                        var currentExpertJsonByFrame = getFrameInJson(jsonArrayEX, video.get());
+                        updateEmoji(parseFloat(currentExpertJsonByFrame[0].value));
+                    }
                 }
 
                 if (videoID.paused) {
@@ -125,7 +128,7 @@ function updateEmoji(value) {
         rest = parseInt(value / 0.125);
         img.src = arrayEmoji[8 + rest];
     }
-    overlay.childNodes[0].src = img.src;
+    overlayContent.childNodes[0].src = img.src;
 }
 
 //Costruisco un oggetto con le informaizoni sul frame corrente dal json.
@@ -150,15 +153,15 @@ function showRec(isVisible) {
 //Cambio imagesaming, in base al tipo di annotazione che l'utente vuole svolgere.
 function simpleSam(type) {
         var imagesaming = document.getElementById("imagesaming");
-        imagesaming.src = "../img/simplesam_" + type + ".png";
-        typeOverlay = overlay.SAM;
+        imagesaming.src = "../img/simplesam_" + type + ".png";  
+        typeOverlay = scaleEmotions.SAM;
         buttonSimpleSam.style.backgroundColor = "#ccc";
         buttonEmojiSam.style.backgroundColor = "white";
 }
 function emojiSam(type) {
         var imagesaming = document.getElementById("imagesaming");
         imagesaming.src = "../img/sam" + type + ".png";
-        typeOverlay = overlay.EMOJI;
+        typeOverlay = scaleEmotions.EMOJI;
         buttonSimpleSam.style.backgroundColor = "white";
         buttonEmojiSam.style.backgroundColor = "#ccc";
 }
@@ -171,12 +174,19 @@ function youAnnotation() {
 }
 
 function expertAnnotation() {
-    typeAnnotation = annotation.EXPERT;
-    slidercontent.style.visibility = "hidden";
-    buttonyouannotation.style.backgroundColor = "white";
-    buttonexpertannotation.style.backgroundColor = "#ccc";
+    if (isExpert) {
+        typeAnnotation = annotation.EXPERT;
+        slidercontent.style.visibility = "hidden";
+        buttonyouannotation.style.backgroundColor = "white";
+        buttonexpertannotation.style.backgroundColor = "#ccc";
+    }
 }
 
+
+//Controllo se esiste l'annotazione dell'esperto.
+function isThereExpertAnnotation(ex) {
+    isExpert = ex;
+}
 function needWriteAnnotation() {
     return (typeAnnotation == 1) ? true : false;
 }
