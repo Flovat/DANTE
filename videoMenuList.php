@@ -2,7 +2,7 @@
     $video = Model::getVideoByUsrId($id);
 
     while($row = mysqli_fetch_array($video)){
-		if($row['name'] == "example.mp4"){
+		if($row['name'] == "Example.mp4"){
 			echo 
           '<li>'
             . '<a href="index.php?id='.$id.'&vid='.$row['name'].'&type=valence">'
