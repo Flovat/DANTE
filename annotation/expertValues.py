@@ -18,6 +18,7 @@ def readValuesFromCSV(spamReader):
     timestamp = list()
     value = list()
     csv_list = list()
+
     #parto da -1 perché il primo valore voglio che sia la stringa nome della colonna 
     count = -1
     
@@ -48,7 +49,20 @@ def getExpertValues(video, value):
     valuesTmp = list()
     valuesAvg = list()
     dim = 0
-    count = 1
+    count = 0
+    frames = list()
+    timestamps = list()
+
+    file = 'expert_'+ value + '_' + video + '.csv'                             
+    if (os.path.exists(path_save+file)):
+        print('esperto trovato')
+        #open file and extract values
+        with open(path_save + file, 'rt') as csvfile:
+            spamReaderExpert = csv.reader(csvfile, delimiter=';', quotechar='|')
+            values = readValuesFromExpert(file, spamReaderExpert)
+            #print('Expert',  values)
+    else:
+        print('esperto NON trovato')
 
     #ciclo per tutti gli annotatori che non sono l'esperto
     for annotator in os.listdir(path_store):
@@ -61,31 +75,14 @@ def getExpertValues(video, value):
                     path_name = path_store+annotator+'/'+vid+'/'+'valence.csv' if value == 'valence' else path_store+annotator+'/'+vid+'/'+'arousal.csv'
                     if os.path.exists(path_name):
                         print('\nvalori esistenti per annotatore: ' + annotator)
+                        count += 1
                         
                         #open file and extract values
                         with open(path_name, 'rt') as csvfile:
                                     spamReader = csv.reader(csvfile, delimiter=';', quotechar='|')
                                     dim, csv_list = readValuesFromCSV(spamReader)
                                     tmp = csv_list[2]
-
-
-
-
-
-                                    #calcolo la media aritmetica sommando prima tutti i valori.......
-                                    #se values è vuoto
-                                    
-                                    '''
-                                    count=+1
-                                    if not values:
-                                        values = tmp
-                                    else:
-                                        #tmp è il nuovo, values è la somma dei vecchi valori
-                                        for f,b in zip(values, tmp):
-                                            if f!= 'Value' and b!= 'Value':
-                                                valuesTmp.append(float(f)+float(b))
-
-                                    '''
+                            
 
 
                                     #EWE
@@ -93,85 +90,77 @@ def getExpertValues(video, value):
                                         #if la media aritmetica fino a ora è vicino al nuovo valore allora somma anche loro
                                         #else scarta il valore e non incrementare il count perchè troppo distante quindi incline a errore
 
-
-                                    
-                                    #prendi i valori dell'esperto se esiste un esperto per usarlo come primo termine di paragone
-                                    
-                                
-                                                                    
-                                    file = 'expert_'+ value + '_' + video + '.csv'
-                                    if (alreadyExists(file)):
-                                        print('esperto trovato')
-                                         #open file and extract values
-                                        with open(path_save + file, 'rt') as csvfile:
-                                            spamReaderExpert = csv.reader(csvfile, delimiter=';', quotechar='|')
-                                            values = readValuesFromExpert(file, spamReaderExpert)
-                                            
-                                            for v,t in zip(values, tmp):
-                                                if v != 'Value' and t != 'Value':
-
-                                                    print('valore tenuto')
-
-                                                    #se annotatore valido
-                                                    if (float(v)/count - float(t) < 0.4):
-                                                        valuesTmp.append(float(v)+float(t))
-                                                        count += 1
-                                                    else:
-                                                        print('valore scartato perchè distante: ' + str(float(v)/count - float(t)))
-                                                    
-
-                                    else:
+                                    #prendi i valori dell'esperto se esiste un esperto per usarlo come primo termine di paragone........
+                                                                      
+                                    if (not os.path.exists(path_save+file)):
                                         values = tmp
-                                        print('esperto NON trovato')
+                                       
+                                            
+                                    if(count > 1):
+                                        for v,t in zip(values, tmp):
+                                            if v != 'Value' and t != 'Value':
 
+                                                
+                                                #se annotazione valida
+                                                dif = float(v)/count - float(t)
+                                                if (dif < 0.3 and dif > -0.3):
+                                                    #print('True' + str(dif))
+
+                                                    #print('v: '+v)
+                                                    
+                                                    valuesTmp.append((float(v) + float(t))/count)
+                                                    
+                                                    #print(str(float(v) + float(t)))
+                                                else:
+                                                    valuesTmp.append(v)
+                                                    #print('False', str(dif))
+                                                        
+                                    else:
+                                        valuesTmp = values
+                                         
+                                        
                                     
                                    
-                        
+                        values = list()
                         #.........e poi dividendoli per il numero di annotatori di quel video
+                        #print('\n\n'+str(count) + ' ' + 'temp   ' + str(valuesTmp))
                         for i in valuesTmp:
-                            values.append(i/count)   
-  
-
-
-
-                 
-
-
+                           
+                            if i=='Value':
+                               
+                                values.append('Value')
+                            else:
+                                
+                                values.append((float(i)) )
+                        
                         frames = csv_list[0]
                         timestamps = csv_list[1]
 
                               
 
                     else:
-                        print('valori non esistenti per annotatore: ' + annotator)
+                        #print('valori non esistenti per annotatore: ' + annotator)
                         if(count == 0): 
                             frames = []
                             timestamps = []
-                                     
+    #print('values' + str(values))                     
     return dim, frames, timestamps, values     
                                    
 def writeValuesCSV(videoName, dim, csv_list, value):   
     path = path_save + 'expert_valence_' + videoName + '.csv' if value=='valence' else path_save + 'expert_arousal_' + videoName + '.csv'
     with open(path, 'w') as outfile:
         
-        for i in range(0, dim-1):
+        for i in range(0, dim):
             k=0
             for entries in csv_list:
                 if k!=0:
                     outfile.write(';')  
                    
                 outfile.write(str(entries[i]))
+               
                 k+=1
             outfile.write('\n')
-
-def alreadyExists(file_name):
-    #check se un file esiste
-    for xpath in glob.glob(path_save): 
-        tmp = file_name
-        
-        if tmp == os.path.basename(xpath):
-            return False
-    return True               
+             
                                 
 def main():
 
