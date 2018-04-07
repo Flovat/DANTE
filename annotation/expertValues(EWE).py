@@ -53,7 +53,7 @@ def calculateEWE(dictExpertCoeff, video, dim, value):
     D = 0
     valuesAvg = list()
     valuesAvg.append("Value")
-    print("dim",dim, "video", video)
+    #print("dim",dim, "video", video)
     for i in range(1,dim-1):
         #ciclo per tutti gli annotatori che non sono l'esperto
         for annotator in os.listdir(path_store):
@@ -84,8 +84,6 @@ def calculateEWE(dictExpertCoeff, video, dim, value):
                                         N += float(tmp[i]) * float(abs(dictExpertCoeff.get(annotator)))
                                         D += abs(dictExpertCoeff.get(annotator))
                                         
-                                       
-        
         valuesAvg.append(float(N)/float(D))
         
     #print(valuesAvg)
@@ -145,13 +143,9 @@ def getExpertValues(video, value):
                                     if(count > 0):
                                         for v,t in zip(values, tmp):
                                             if v != 'Value' and t != 'Value':
-
                                                 #se annotazione valida
                                                 dif = float(v)/count - float(t)
-                                            
-
-                                                valueDiffExpert += dif 
-                                                                                             
+                                                valueDiffExpert += dif                                                 
                                     else:
                                         valuesTmp = values
                                          
@@ -167,7 +161,7 @@ def getExpertValues(video, value):
                             frames = []
                             timestamps = []
      
-    print(dictExpertCoeff)               
+    #print(dictExpertCoeff)               
     return dim, frames, timestamps, dictExpertCoeff     
                                    
 def writeValuesCSV(videoName, dim, csv_list, value):   

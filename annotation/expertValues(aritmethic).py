@@ -6,20 +6,17 @@ import glob
 import os.path
 import itertools 
 
-
 #da modificare
 path_store = 'D:/Projects/DANTE/annotation/'
 path_save = 'D:/Projects/DANTE/annotation/expert/'
 path_videos = 'D:/Projects/DANTE/video/alpha/' 
-
-
 
 def readValuesFromCSV(spamReader):
     frame = list()
     timestamp = list()
     value = list()
     csv_list = list()
-
+    #il primo valore dell'array è la stringa nome colonna
     count = -1
     
     for row in spamReader:
@@ -35,8 +32,7 @@ def readValuesFromCSV(spamReader):
     csv_list.append(timestamp)
     csv_list.append(value)
     
-    return len(frame), csv_list
-        
+    return len(frame), csv_list      
 
 def getExpertValues(video, value):
     values = list()
@@ -50,9 +46,7 @@ def getExpertValues(video, value):
     for annotator in os.listdir(path_store):
         if os.path.isdir(os.path.join(path_store, annotator)) and annotator!='expert':
             #print(annotator)
-            
             for vid in os.listdir(path_store+annotator):
-                
 
                 if vid == video + '_mp4':
                     #print(vid)
@@ -65,8 +59,8 @@ def getExpertValues(video, value):
                                     spamReader = csv.reader(csvfile, delimiter=';', quotechar='|')
                                     dim, csv_list = readValuesFromCSV(spamReader)
                                     tmp = csv_list[2]
-                                    print((values))
-                                    print((tmp))
+                                    #print((values))
+                                    #print((tmp))
                                     if not values:
                                         values = tmp
                                       
@@ -78,7 +72,7 @@ def getExpertValues(video, value):
                                             else:
                                                 valuesTmp.append("Value")
                                             
-                                    print(valuesTmp)
+                                    #print(valuesTmp)
                         
                         for i in valuesTmp:
                             if i == "Value":
@@ -99,12 +93,6 @@ def getExpertValues(video, value):
     print((valuesAvg))                
     return dim, frames, timestamps, valuesAvg     
    
-
-    
-
-                                    
-                                    
-
 def writeValuesCSV(videoName, dim, csv_list, value):   
     path = path_save + 'expert_valence_' + videoName + '.csv' if value=='valence' else path_save + 'expert_arousal_' + videoName + '.csv'
     with open(path, 'w') as outfile:
@@ -118,9 +106,7 @@ def writeValuesCSV(videoName, dim, csv_list, value):
                 outfile.write(str(entries[i]))
                 k+=1
             outfile.write('\n')
-
-            
-                                
+                            
 
 def main():
 
@@ -169,8 +155,4 @@ def main():
                 print('non scrivo i valori')
                 
            
-            
-
-
-
 main()  
